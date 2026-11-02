@@ -67,3 +67,4 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
     </nav>
   );
 }
+

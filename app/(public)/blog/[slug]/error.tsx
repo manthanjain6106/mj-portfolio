@@ -44,3 +44,4 @@ export default function BlogPostError({ error, reset }: BlogPostErrorProps) {
     </div>
   );
 }
+
