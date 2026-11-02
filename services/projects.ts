@@ -1,9 +1,39 @@
+import { connectToDatabase } from "@/lib/mongodb";
+import { Project, type IProject } from "@/models/Project";
 import {
   seedProjects,
   type ProjectItem,
   type ProjectCategory,
 } from "@/content/projects.seed";
 
+export async function getProjectsCount(): Promise<number> {
+  try {
+    await connectToDatabase();
+    return await Project.countDocuments();
+  } catch (error) {
+    if (process.env.NODE_ENV === "development") {
+      console.warn("Could not fetch projects count from database:", error);
+    }
+    return 0;
+  }
+}
+
+export async function getRecentProjects(limit = 5): Promise<IProject[]> {
+  try {
+    await connectToDatabase();
+    return await Project.find()
+      .sort({ createdAt: -1 })
+      .limit(limit)
+      .lean<IProject[]>();
+  } catch (error) {
+    if (process.env.NODE_ENV === "development") {
+      console.warn("Could not fetch recent projects from database:", error);
+    }
+    return [];
+  }
+}
+
+// Public static seed queries (active until Phase 4 admin CRUD & DB integration)
 export async function getAllProjects(): Promise<readonly ProjectItem[]> {
   return seedProjects;
 }
