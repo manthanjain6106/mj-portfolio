@@ -41,3 +41,4 @@ export async function getPostBySlug(slug: string): Promise<IPost | null> {
     return null;
   }
 }
+
