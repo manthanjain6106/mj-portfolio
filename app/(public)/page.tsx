@@ -1,19 +1,33 @@
-export default function HomePage() {
+import type { Metadata } from "next";
+import { getSiteConfig } from "@/services/site";
+import { getFeaturedProjects } from "@/services/projects";
+import { getSkillsStrip } from "@/services/skills";
+import { HeroSection } from "@/components/sections/hero-section";
+import { FeaturedProjectsSection } from "@/components/sections/featured-projects-section";
+import { SkillsStripSection } from "@/components/sections/skills-strip-section";
+import { LatestPostsSection } from "@/components/sections/latest-posts-section";
+import { ClosingCtaSection } from "@/components/sections/closing-cta-section";
+
+export const metadata: Metadata = {
+  title: "Manthan | Full Stack & AI Developer",
+  description:
+    "Personal portfolio and proof of work for Manthan, a Full Stack Developer and AI Developer based in Vadodara, Gujarat, India.",
+};
+
+export default async function HomePage() {
+  const [site, featuredProjects, skillsStrip] = await Promise.all([
+    getSiteConfig(),
+    getFeaturedProjects(),
+    getSkillsStrip(),
+  ]);
+
   return (
-    <div className="flex min-h-[calc(100vh-8rem)] flex-col items-center justify-center px-4 py-16 text-center sm:px-6">
-      <div className="mx-auto max-w-xl space-y-4">
-        <span className="border-border bg-muted text-muted-foreground inline-flex items-center rounded-full border px-3 py-1 font-mono text-xs">
-          Phase 1: Foundation Active
-        </span>
-        <h1 className="text-foreground text-3xl font-semibold tracking-tight sm:text-4xl">
-          Manthan&apos;s Portfolio
-        </h1>
-        <p className="text-muted-foreground text-sm sm:text-base">
-          Foundation setup complete. Design tokens, typography, dark/light
-          theme, and layout shell are functioning. Public pages and content will
-          be built in Phase 2.
-        </p>
-      </div>
+    <div className="mx-auto max-w-5xl px-4 sm:px-6">
+      <HeroSection site={site} />
+      <SkillsStripSection skills={skillsStrip} />
+      <FeaturedProjectsSection projects={featuredProjects} />
+      <LatestPostsSection />
+      <ClosingCtaSection site={site} />
     </div>
   );
 }
