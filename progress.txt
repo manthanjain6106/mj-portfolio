@@ -1,0 +1,61 @@
+PROGRESS LOG: mj-portfolio
+==========================
+Source of truth for scope: PRD.md
+Rule: update this file at the END of every phase. Never mark a phase done unless lint, typecheck, and build pass.
+
+STATUS
+------
+[x] Phase 1: Foundation (setup, tokens, layout, theme)
+[ ] Phase 2: Static public pages and content files
+[ ] Phase 3: Database, models, auth, admin shell
+[ ] Phase 4: Projects (admin CRUD + public pages) and image upload
+[ ] Phase 5: Blog (editor, publish flow, public pages)
+[ ] Phase 6: Contact form, messages inbox, settings
+[ ] Phase 7: SEO (metadata, OG, sitemap, RSS, JSON-LD)
+[ ] Phase 8: Hardening (performance, accessibility, tests, README, deploy)
+
+CURRENT PHASE
+-------------
+Phase 1 completed. Ready for Phase 2.
+
+LOG (newest first)
+------------------
+2026-11-02 | Phase 1 | Initialized Next.js 15 (App Router) with TypeScript in strict mode. Configured Tailwind CSS v4, shadcn/ui (base-nova), Framer Motion, next-themes, zod, ESLint, and Prettier. Defined design tokens (one warm amber brand accent + neutral grays, radii, spacing, type scale) as CSS variables in globals.css, mapped to Tailwind theme with Geist Sans and Geist Mono. Created lib/env.ts with Zod schema validation, .env.example, root layout with SkipToContent, Navbar, Footer, ThemeToggle, ThemeProvider, ChatWidgetSlot (null stub), app/api/chat/route.ts (501 stub), temporary home page at app/(public)/page.tsx, and PRD section 12 directory structure with .gitkeep files. | npm run lint (pass), npm run typecheck (pass), npm run format (pass), npm run build (pass: 6/6 static & dynamic pages) | Added foundation layout, theme, styles, config files, and initialized git repository.
+
+DECISIONS
+---------
+- Accent Color: Selected warm editorial amber (oklch(0.78 0.16 68) dark / oklch(0.58 0.18 55) light) as the single accent color, keeping all other tokens neutral zinc/slate grays for a clean, minimal editorial aesthetic.
+- Dark Default: Configured next-themes ThemeProvider with defaultTheme="dark", enableSystem=true, and mapped default tokens to :root and .dark to eliminate any white flash during SSR/hydration.
+- Environment Validation: Implemented lib/env.ts using Zod with a lazy validation Proxy and safe fallback check (SKIP_ENV_VALIDATION / test) to ensure rock-solid type safety without failing build-time page generation if secrets are unpopulated.
+- Route Group Structure: Placed the home page in app/(public)/page.tsx matching PRD section 12 target structure.
+- Prettier & ESLint Integration: Integrated prettier-plugin-tailwindcss and eslint-config-prettier for consistent class ordering and zero formatting conflicts.
+
+DEPENDENCIES ADDED
+------------------
+- next (15.5.28) | Next.js 15 App Router framework
+- react, react-dom (19.1.0) | Core React 19 libraries
+- typescript (^5) | TypeScript strict mode compilation
+- tailwindcss (^4), @tailwindcss/postcss (^4) | Utility-first CSS styling engine
+- shadcn (^4.23.0), @base-ui/react (^1.9.0), class-variance-authority (^0.7.1), cn (^0.5.1), tw-animate-css (^1.4.0) | Accessible UI component primitives and styling utilities
+- framer-motion (^12.42.0) | Smooth, subtle UI transitions with reduced-motion support
+- lucide-react (^1.66.0) | Accessible, clean UI iconography
+- next-themes (^0.4.6) | Dark/light theme management with system preference support
+- zod (^4.6.7) | Input validation and environment variable schema validation
+- prettier (^3.9.10), prettier-plugin-tailwindcss (^0.6.14), eslint-config-prettier (^10.1.8) | Code formatting and ESLint conflict resolution
+
+TODO(manthan): CONTENT NEEDED FROM OWNER
+----------------------------------------
+- Profile photo
+- Resume PDF
+- Short bio (3-4 lines) and about-page story
+- Project descriptions (problem, solution, role) + screenshots: LeadAI, Mini Jarvis, Mavrox, videographer client site, GTA LFG app
+- Social links (GitHub, LinkedIn, email)
+- Domain name
+
+KNOWN ISSUES
+------------
+(None)
+
+NEXT STEP
+---------
+Wait for user approval, then start Phase 2 (Static public pages and content files).
