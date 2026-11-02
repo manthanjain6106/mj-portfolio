@@ -9,17 +9,18 @@ STATUS
 [x] Phase 2: Static public pages and content files
 [x] Phase 3: Database, models, auth, admin shell
 [x] Phase 4: Projects (admin CRUD + public pages) and image upload
-[ ] Phase 5: Blog (editor, publish flow, public pages)
+[x] Phase 5: Blog (editor, publish flow, public pages)
 [ ] Phase 6: Contact form, messages inbox, settings
 [ ] Phase 7: SEO (metadata, OG, sitemap, RSS, JSON-LD)
 [ ] Phase 8: Hardening (performance, accessibility, tests, README, deploy)
 
 CURRENT PHASE
 -------------
-Phase 4 completed. Ready for Phase 5.
+Phase 5 completed. Ready for Phase 6.
 
 LOG (newest first)
 ------------------
+2026-11-02 | Phase 5 | Built complete Blog system with editorial publishing flow and public reader experience. Implemented pure, allowlist-based HTML sanitization in lib/sanitize.ts with dual sanitization on save and on render, plus automated reading time calculation (200 wpm) and heading extraction with anchor ID injection for TOC navigation; validated with unit tests in tests/unit/sanitize.test.ts. Built full Admin Post management at /admin/posts (table listing, status filter tabs for all/published/scheduled/drafts, title/slug search, row actions for edit, delete with Cloudinary asset cleanup, and quick status toggling), /admin/posts/new, and /admin/posts/[id]/edit with Zod validation (lib/validations/post.ts) and unique editable slugs. Created client-side Tiptap editor (components/admin/tiptap-editor.tsx) featuring headings (H2/H3), bold, italic, code blocks, blockquotes, bullet/ordered lists, horizontal rules, links, undo/redo, and direct Cloudinary image uploads. Built live article preview tab before publishing in PostForm alongside real-time character counters for SEO title (max 60) and SEO description (max 160). Implemented query-time scheduling in services/posts.ts evaluating public status at runtime ($or: published or scheduled with publishedAt <= now) guaranteeing drafts return 404 on direct URL navigation. Built public reader pages at /blog (grid, search, tag filters, pagination), /blog/[slug] (cover image, reading time, tags, sticky Table of Contents, syntax-highlighted code via highlight.js, share links for X/LinkedIn/Copy, related posts strip), and /blog/tag/[tag] (topic archive with breadcrumbs and pagination). Integrated latest published articles on Home page with graceful empty fallback. | npm run lint (pass: 0 warnings/errors), npm run typecheck (pass: 0 errors), npm run format (pass), npm run build (pass: 17/17 routes + Edge middleware) | Added @tiptap/react, @tiptap/pm, @tiptap/starter-kit, @tiptap/extension-link, @tiptap/extension-image, sanitize-html, @types/sanitize-html, highlight.js.
 2026-11-02 | Phase 4 | Built Cloudinary integration with server-side upload route (app/api/media/upload) verifying admin session, MIME type (images only), and 5 MB size limit, alongside delete handler (app/api/media/delete) and reusable ImageUploader component (preview, upload progress, alt text, Cloudinary deletion). Built Admin Projects management at /admin/projects (table listing, status/featured toggles, order controls, edit/delete actions), /admin/projects/new, and /admin/projects/[id]/edit with client/server Zod validation (lib/validations/project.ts) and auto-generated unique editable slugs (lib/slug.ts). Built public pages at /projects (grid + category filters for fullstack, ai, hardware, other) and /projects/[slug] (case study: problem, solution, role, tech stack, screenshots gallery, live/repo CTAs) with ISR revalidation. Integrated database project queries in services/projects.ts across Home and public pages. Created standalone seed script in scripts/seed-projects.ts (npm run seed:projects) importing all 5 seed projects into MongoDB Atlas as DRAFTs. Implemented loading, error, and empty states across public and admin project routes. | npm run lint (pass), npm run typecheck (pass), npm run format (pass), npm run build (pass: 16/16 routes + Edge middleware) | Added Cloudinary lib, media routes, project validations, actions, admin CRUD views, public project routes, loading/error boundaries, and seed script.
 2026-11-02 | Phase 3 | Implemented cached Mongoose connection helper in lib/mongodb.ts with global state protection against Next.js hot reload and serverless invocation leaks. Created Mongoose models in models/ (Post, Project, Message, Setting) matching PRD Section 8 with validation, unique indexes, enums, timestamps, and model re-compilation guards. Built typed data-access functions in services/ (posts.ts, projects.ts, messages.ts, settings.ts, admin.ts) for metrics and queries. Configured Auth.js v5 in lib/auth.ts using JWT strategy and GitHub OAuth provider with whitelisted ADMIN_EMAIL enforcement in the signIn callback. Implemented Edge protection in middleware.ts for /admin/* and server-side session re-validation via requireAdmin() in lib/admin-auth.ts. Built /admin/login with error states, and admin shell with AdminSidebar, AdminHeader with sign-out, and Dashboard at /admin with real database counts (posts, projects, unread messages) and zero-count empty states. Added app/robots.ts disallowing /admin/ and /api/ plus noindex metadata on admin routes. Enhanced lib/env.ts with clear formatted error messages. | npm run lint (pass), npm run typecheck (pass), npm run format (pass), npm run build (pass: 13/13 static and dynamic routes + Edge middleware) | Added lib/mongodb.ts, models/, services/, lib/auth.ts, lib/admin-auth.ts, middleware.ts, app/admin/, app/api/auth/, and app/robots.ts.
 2026-11-02 | Phase 2 | Created typed static content in content/ (site.ts, skills.ts, experience.ts, projects.seed.ts) adhering strictly to PRD facts with TODO(manthan) markers for missing details. Implemented data access layer in services/ (site.ts, skills.ts, experience.ts, projects.ts) for uniform access and future chatbot context. Built responsive public pages: Home (HeroSection, SkillsStripSection, FeaturedProjectsSection, LatestPostsSection empty state, ClosingCtaSection), About (story, PIET 2023-2027 education, focus, photo placeholder), Skills (grouped by Frontend, Backend, Databases, AI, Tools), Experience (education, freelance videographer project, open-source, training), Resume (inline verified document view + PDF download handler), Contact (accessible form UI + direct channels sidebar), and custom not-found 404 page. Created FadeIn wrapper respecting prefers-reduced-motion, enhanced Button with polymorphic asChild support, and created clean SVG brand icons for GitHub and LinkedIn. | npm run lint (pass), npm run typecheck (pass), npm run format (pass), npm run build (pass: 11/11 pages prerendered) | Added content/, services/, components/sections/, public page routes, and updated progress log.
@@ -27,6 +28,10 @@ LOG (newest first)
 
 DECISIONS
 ---------
+- Dual-Layer HTML Sanitization: Enforced strict allowlist sanitization on both server save (preventing database pollution) and client render in lib/sanitize.ts via sanitize-html, disallowing unsafe script/iframe tags and enforcing noopener/noreferrer on external links.
+- Query-Time Publication & Scheduling: Evaluated public visibility exclusively at query time ($or: [status: 'published'], [status: 'scheduled', publishedAt <= now]) with zero background crons, guaranteeing unpublished drafts unconditionally return 404 on direct URL access.
+- Non-Destructive Heading IDs: Automatically injected slugified IDs into H2/H3 tags at render time to enable smooth Table of Contents anchor jumping without requiring manual anchor markup in the editor.
+- Editorial Token Typography: Styled article typography and syntax highlighting exclusively using CSS custom properties mapped to design tokens, ensuring perfect harmony in both dark and light modes with zero arbitrary colors.
 - Server-Side Signed Media Uploads: Enforced authenticated admin session validation and strict MIME type allowlist + 5 MB size limit directly on the server before streaming image buffers to Cloudinary.
 - Automatic Cloudinary Asset Cleanup: Deleting a project automatically detects and destroys non-placeholder uploaded images from Cloudinary to avoid orphan assets.
 - Draft Seeding Workflow: Created scripts/seed-projects.ts importing seed projects as DRAFTs per user specification, allowing the owner to review, edit, and toggle them to published in the admin UI.
@@ -39,6 +44,10 @@ DECISIONS
 
 DEPENDENCIES ADDED
 ------------------
+- @tiptap/react, @tiptap/pm, @tiptap/starter-kit (^3.32.2) | Headless rich-text editor for article composition
+- @tiptap/extension-link, @tiptap/extension-image (^3.32.2) | Tiptap extensions for hyperlink handling and image embeds
+- sanitize-html (^2.18.1), @types/sanitize-html (^2.16.2) | Pure allowlist-based HTML sanitization for XSS prevention
+- highlight.js (^11.12.0) | Syntax highlighting engine for code blocks mapped to design tokens
 - cloudinary (^2.11.0) | Server-side image upload stream management and remote asset deletion
 - tsx (^4.23.15) | TypeScript execution engine for running database seed scripts in Node
 - mongoose (^9.11.4) | MongoDB object modeling and cached connection management for serverless Next.js
@@ -69,4 +78,4 @@ KNOWN ISSUES
 
 NEXT STEP
 ---------
-Wait for user approval, then start Phase 5 (Blog editor, publish flow, public pages).
+Wait for user approval, then start Phase 6 (Contact form, messages inbox, settings).

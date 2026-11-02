@@ -1,8 +1,14 @@
 import Link from "next/link";
-import { BookOpen, Sparkles } from "lucide-react";
+import { BookOpen } from "lucide-react";
 import { FadeIn } from "@/components/ui/fade-in";
+import { PostCard } from "@/components/blog/post-card";
+import type { SerializedPost } from "@/services/posts";
 
-export function LatestPostsSection() {
+interface LatestPostsSectionProps {
+  readonly posts?: readonly SerializedPost[];
+}
+
+export function LatestPostsSection({ posts = [] }: LatestPostsSectionProps) {
   return (
     <section
       aria-labelledby="latest-posts-heading"
@@ -30,23 +36,26 @@ export function LatestPostsSection() {
           </Link>
         </div>
 
-        {/* Empty state per PRD Rule 6 & 10 (Blog publishing in Phase 5) */}
-        <div className="border-border bg-card/50 flex flex-col items-center justify-center rounded-lg border border-dashed p-8 text-center sm:p-12">
-          <div className="border-border bg-muted text-brand rounded-full border p-3">
-            <BookOpen className="size-6" />
+        {posts.length === 0 ? (
+          <div className="border-border bg-card/50 flex flex-col items-center justify-center rounded-lg border border-dashed p-8 text-center sm:p-12">
+            <div className="border-border bg-muted text-brand rounded-full border p-3">
+              <BookOpen className="size-6" />
+            </div>
+            <h3 className="text-foreground mt-4 text-base font-medium">
+              Articles in preparation
+            </h3>
+            <p className="text-muted-foreground mt-2 max-w-md text-sm">
+              Deep dives into full-stack engineering, Next.js architecture, and
+              applied AI development will be published here soon.
+            </p>
           </div>
-          <h3 className="text-foreground mt-4 text-base font-medium">
-            Articles in preparation
-          </h3>
-          <p className="text-muted-foreground mt-2 max-w-md text-sm">
-            Deep dives into full-stack engineering, Next.js architecture, and
-            applied AI development will be published here soon.
-          </p>
-          <div className="border-brand/20 bg-brand-muted/40 text-brand mt-5 inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs">
-            <Sparkles className="size-3.5" />
-            <span>Publishing flow arrives in Phase 5</span>
+        ) : (
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {posts.map((post) => (
+              <PostCard key={post._id} post={post} />
+            ))}
           </div>
-        </div>
+        )}
       </FadeIn>
     </section>
   );

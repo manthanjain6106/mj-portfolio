@@ -19,14 +19,14 @@ export default async function AdminDashboardPage() {
       count: stats.postsCount,
       icon: FileText,
       emptyMessage: "0 posts created",
-      phaseNote: "CRUD in Phase 5",
+      phaseNote: "Editor & publish active",
     },
     {
       title: "Total Projects",
       count: stats.projectsCount,
       icon: FolderGit2,
       emptyMessage: "0 projects stored",
-      phaseNote: "CRUD in Phase 4",
+      phaseNote: "Management active",
     },
     {
       title: "Unread Messages",
@@ -106,7 +106,7 @@ export default async function AdminDashboardPage() {
                 No blog posts created yet
               </p>
               <p className="text-muted-foreground mt-0.5 text-[11px]">
-                Post creation and Tiptap editor arrive in Phase 5.
+                Create and manage articles in the Posts tab.
               </p>
             </div>
           ) : (

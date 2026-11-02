@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getSiteConfig } from "@/services/site";
 import { getFeaturedProjects } from "@/services/projects";
 import { getSkillsStrip } from "@/services/skills";
+import { getRecentPublicPosts } from "@/services/posts";
 import { HeroSection } from "@/components/sections/hero-section";
 import { FeaturedProjectsSection } from "@/components/sections/featured-projects-section";
 import { SkillsStripSection } from "@/components/sections/skills-strip-section";
@@ -17,10 +18,11 @@ export const metadata: Metadata = {
 };
 
 export default async function HomePage() {
-  const [site, featuredProjects, skillsStrip] = await Promise.all([
+  const [site, featuredProjects, skillsStrip, recentPosts] = await Promise.all([
     getSiteConfig(),
     getFeaturedProjects(),
     getSkillsStrip(),
+    getRecentPublicPosts(3),
   ]);
 
   return (
@@ -28,7 +30,7 @@ export default async function HomePage() {
       <HeroSection site={site} />
       <SkillsStripSection skills={skillsStrip} />
       <FeaturedProjectsSection projects={featuredProjects} />
-      <LatestPostsSection />
+      <LatestPostsSection posts={recentPosts} />
       <ClosingCtaSection site={site} />
     </div>
   );

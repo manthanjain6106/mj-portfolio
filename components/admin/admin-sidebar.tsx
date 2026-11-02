@@ -22,12 +22,11 @@ interface AdminNavItem {
 
 const ADMIN_NAV: readonly AdminNavItem[] = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/admin/posts", label: "Posts", icon: FileText, phase: "Phase 5" },
+  { href: "/admin/posts", label: "Posts", icon: FileText },
   {
     href: "/admin/projects",
     label: "Projects",
     icon: FolderGit2,
-    phase: "Phase 4",
   },
   { href: "/admin/messages", label: "Messages", icon: Mail, phase: "Phase 6" },
   { href: "/admin/media", label: "Media", icon: ImageIcon, phase: "Phase 4" },

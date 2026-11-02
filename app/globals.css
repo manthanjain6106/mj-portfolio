@@ -208,3 +208,201 @@
     @apply font-sans;
   }
 }
+
+/* Typography styles for article content using design tokens */
+.article-prose {
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  line-height: 1.75;
+  font-size: 1.0625rem;
+}
+
+.article-prose p {
+  margin-top: 1.25em;
+  margin-bottom: 1.25em;
+  color: var(--foreground);
+}
+
+.article-prose h1,
+.article-prose h2,
+.article-prose h3,
+.article-prose h4 {
+  color: var(--foreground);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  scroll-margin-top: 6rem;
+}
+
+.article-prose h1 {
+  font-size: 2rem;
+  margin-top: 2em;
+  margin-bottom: 0.75em;
+}
+
+.article-prose h2 {
+  font-size: 1.5rem;
+  margin-top: 2em;
+  margin-bottom: 0.75em;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.4em;
+}
+
+.article-prose h3 {
+  font-size: 1.25rem;
+  margin-top: 1.75em;
+  margin-bottom: 0.5em;
+}
+
+.article-prose a {
+  color: var(--brand);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  font-weight: 500;
+  transition: opacity 0.2s;
+}
+
+.article-prose a:hover {
+  opacity: 0.8;
+}
+
+.article-prose strong,
+.article-prose b {
+  color: var(--foreground);
+  font-weight: 600;
+}
+
+.article-prose ul {
+  list-style-type: disc;
+  margin-top: 1.25em;
+  margin-bottom: 1.25em;
+  padding-left: 1.625em;
+}
+
+.article-prose ol {
+  list-style-type: decimal;
+  margin-top: 1.25em;
+  margin-bottom: 1.25em;
+  padding-left: 1.625em;
+}
+
+.article-prose li {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+.article-prose blockquote {
+  border-left: 3px solid var(--brand);
+  margin-top: 1.5em;
+  margin-bottom: 1.5em;
+  padding-left: 1.25em;
+  font-style: italic;
+  color: var(--muted-foreground);
+}
+
+.article-prose code {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+  background-color: var(--muted);
+  color: var(--foreground);
+  padding: 0.2em 0.4em;
+  border-radius: var(--radius-sm);
+}
+
+.article-prose pre {
+  background-color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  margin-top: 1.5em;
+  margin-bottom: 1.5em;
+}
+
+.article-prose pre code {
+  background-color: transparent;
+  padding: 0;
+  border-radius: 0;
+  font-size: 0.875rem;
+  line-height: 1.7;
+}
+
+.article-prose hr {
+  border-color: var(--border);
+  margin-top: 2.5em;
+  margin-bottom: 2.5em;
+}
+
+.article-prose img {
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  margin-top: 2em;
+  margin-bottom: 2em;
+  max-width: 100%;
+  height: auto;
+}
+
+/* Tiptap editor internal editable area */
+.tiptap-editor-content .tiptap {
+  outline: none;
+  min-height: 280px;
+}
+
+.tiptap-editor-content .tiptap p.is-editor-empty:first-child::before {
+  color: var(--muted-foreground);
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+/* Syntax highlighting tokens mapped to design tokens */
+.hljs {
+  color: var(--foreground);
+}
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-built_in,
+.hljs-name,
+.hljs-tag {
+  color: var(--brand);
+}
+.hljs-string,
+.hljs-title,
+.hljs-section,
+.hljs-attribute,
+.hljs-literal,
+.hljs-template-tag,
+.hljs-template-variable,
+.hljs-type,
+.hljs-addition {
+  color: oklch(0.75 0.14 140);
+}
+.light .hljs-string,
+.light .hljs-title,
+.light .hljs-section,
+.light .hljs-attribute,
+.light .hljs-literal,
+.light .hljs-type {
+  color: oklch(0.45 0.14 140);
+}
+.hljs-comment,
+.hljs-quote,
+.hljs-deletion,
+.hljs-meta {
+  color: var(--muted-foreground);
+  font-style: italic;
+}
+.hljs-number,
+.hljs-regexp,
+.hljs-link {
+  color: oklch(0.75 0.16 310);
+}
+.light .hljs-number,
+.light .hljs-regexp,
+.light .hljs-link {
+  color: oklch(0.5 0.16 310);
+}
+.hljs-variable,
+.hljs-params {
+  color: var(--foreground);
+}
