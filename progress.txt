@@ -8,7 +8,7 @@ STATUS
 [x] Phase 1: Foundation (setup, tokens, layout, theme)
 [x] Phase 2: Static public pages and content files
 [x] Phase 3: Database, models, auth, admin shell
-[ ] Phase 4: Projects (admin CRUD + public pages) and image upload
+[x] Phase 4: Projects (admin CRUD + public pages) and image upload
 [ ] Phase 5: Blog (editor, publish flow, public pages)
 [ ] Phase 6: Contact form, messages inbox, settings
 [ ] Phase 7: SEO (metadata, OG, sitemap, RSS, JSON-LD)
@@ -16,41 +16,47 @@ STATUS
 
 CURRENT PHASE
 -------------
-Phase 3 completed. Ready for Phase 4.
+Phase 4 completed. Ready for Phase 5.
 
 LOG (newest first)
 ------------------
+2026-11-02 | Phase 4 | Built Cloudinary integration with server-side upload route (app/api/media/upload) verifying admin session, MIME type (images only), and 5 MB size limit, alongside delete handler (app/api/media/delete) and reusable ImageUploader component (preview, upload progress, alt text, Cloudinary deletion). Built Admin Projects management at /admin/projects (table listing, status/featured toggles, order controls, edit/delete actions), /admin/projects/new, and /admin/projects/[id]/edit with client/server Zod validation (lib/validations/project.ts) and auto-generated unique editable slugs (lib/slug.ts). Built public pages at /projects (grid + category filters for fullstack, ai, hardware, other) and /projects/[slug] (case study: problem, solution, role, tech stack, screenshots gallery, live/repo CTAs) with ISR revalidation. Integrated database project queries in services/projects.ts across Home and public pages. Created standalone seed script in scripts/seed-projects.ts (npm run seed:projects) importing all 5 seed projects into MongoDB Atlas as DRAFTs. Implemented loading, error, and empty states across public and admin project routes. | npm run lint (pass), npm run typecheck (pass), npm run format (pass), npm run build (pass: 16/16 routes + Edge middleware) | Added Cloudinary lib, media routes, project validations, actions, admin CRUD views, public project routes, loading/error boundaries, and seed script.
 2026-11-02 | Phase 3 | Implemented cached Mongoose connection helper in lib/mongodb.ts with global state protection against Next.js hot reload and serverless invocation leaks. Created Mongoose models in models/ (Post, Project, Message, Setting) matching PRD Section 8 with validation, unique indexes, enums, timestamps, and model re-compilation guards. Built typed data-access functions in services/ (posts.ts, projects.ts, messages.ts, settings.ts, admin.ts) for metrics and queries. Configured Auth.js v5 in lib/auth.ts using JWT strategy and GitHub OAuth provider with whitelisted ADMIN_EMAIL enforcement in the signIn callback. Implemented Edge protection in middleware.ts for /admin/* and server-side session re-validation via requireAdmin() in lib/admin-auth.ts. Built /admin/login with error states, and admin shell with AdminSidebar, AdminHeader with sign-out, and Dashboard at /admin with real database counts (posts, projects, unread messages) and zero-count empty states. Added app/robots.ts disallowing /admin/ and /api/ plus noindex metadata on admin routes. Enhanced lib/env.ts with clear formatted error messages. | npm run lint (pass), npm run typecheck (pass), npm run format (pass), npm run build (pass: 13/13 static and dynamic routes + Edge middleware) | Added lib/mongodb.ts, models/, services/, lib/auth.ts, lib/admin-auth.ts, middleware.ts, app/admin/, app/api/auth/, and app/robots.ts.
 2026-11-02 | Phase 2 | Created typed static content in content/ (site.ts, skills.ts, experience.ts, projects.seed.ts) adhering strictly to PRD facts with TODO(manthan) markers for missing details. Implemented data access layer in services/ (site.ts, skills.ts, experience.ts, projects.ts) for uniform access and future chatbot context. Built responsive public pages: Home (HeroSection, SkillsStripSection, FeaturedProjectsSection, LatestPostsSection empty state, ClosingCtaSection), About (story, PIET 2023-2027 education, focus, photo placeholder), Skills (grouped by Frontend, Backend, Databases, AI, Tools), Experience (education, freelance videographer project, open-source, training), Resume (inline verified document view + PDF download handler), Contact (accessible form UI + direct channels sidebar), and custom not-found 404 page. Created FadeIn wrapper respecting prefers-reduced-motion, enhanced Button with polymorphic asChild support, and created clean SVG brand icons for GitHub and LinkedIn. | npm run lint (pass), npm run typecheck (pass), npm run format (pass), npm run build (pass: 11/11 pages prerendered) | Added content/, services/, components/sections/, public page routes, and updated progress log.
 2026-11-02 | Phase 1 | Initialized Next.js 15 (App Router) with TypeScript in strict mode. Configured Tailwind CSS v4, shadcn/ui (base-nova), Framer Motion, next-themes, zod, ESLint, and Prettier. Defined design tokens (one warm amber brand accent + neutral grays, radii, spacing, type scale) as CSS variables in globals.css, mapped to Tailwind theme with Geist Sans and Geist Mono. Created lib/env.ts with Zod schema validation, .env.example, root layout with SkipToContent, Navbar, Footer, ThemeToggle, ThemeProvider, ChatWidgetSlot (null stub), app/api/chat/route.ts (501 stub), temporary home page at app/(public)/page.tsx, and PRD section 12 directory structure with .gitkeep files. | npm run lint (pass), npm run typecheck (pass), npm run format (pass), npm run build (pass: 6/6 static & dynamic pages) | Added foundation layout, theme, styles, config files, and initialized git repository.
 
 DECISIONS
 ---------
+- Server-Side Signed Media Uploads: Enforced authenticated admin session validation and strict MIME type allowlist + 5 MB size limit directly on the server before streaming image buffers to Cloudinary.
+- Automatic Cloudinary Asset Cleanup: Deleting a project automatically detects and destroys non-placeholder uploaded images from Cloudinary to avoid orphan assets.
+- Draft Seeding Workflow: Created scripts/seed-projects.ts importing seed projects as DRAFTs per user specification, allowing the owner to review, edit, and toggle them to published in the admin UI.
+- ISR & Instant Admin Revalidation: Applied export const revalidate = 60 with on-demand revalidatePath in Server Actions so admin updates appear instantly on Home, /projects, and /projects/[slug] without redeploying.
+- Comprehensive Resilience: Added loading.tsx and error.tsx boundaries to all public and admin project routes with structured skeleton screens and retry capabilities.
 - Admin Route Architecture: Separated authenticated admin routes into app/admin/(authenticated)/ with its own layout verifying requireAdmin(), while placing app/admin/login outside the route group to prevent redirect loops.
 - Dual-Layer Security Verification: Guarded admin routes via both Edge middleware.ts (pre-render redirection) and mandatory server-side requireAdmin() session re-checks in all admin layouts and actions per PRD Section 10.
 - Strict Email Whitelist: Enforced ADMIN_EMAIL verification directly inside NextAuth's signIn callback to immediately reject any non-whitelisted GitHub account before a session is issued.
 - Serverless-Ready Mongoose Cache: Implemented global connection caching with bufferCommands: false in lib/mongodb.ts and hot-reload model re-compilation guards across all models in models/.
-- Live Dashboard Empty States: Designed Dashboard metrics cards and recent activity streams to query real database counts and display structured empty states when zero items exist.
-- Robots & Crawling Restrictions: Created app/robots.ts disallowing /admin/ and /api/ paths and configured explicit noindex/nofollow robots metadata on app/admin/layout.tsx.
-- Clear Environment Guidance: Formatted lib/env.ts to throw formatted terminal alerts pointing directly to .env.local and .env.example if required variables are omitted at runtime.
 
 DEPENDENCIES ADDED
 ------------------
+- cloudinary (^2.11.0) | Server-side image upload stream management and remote asset deletion
+- tsx (^4.23.15) | TypeScript execution engine for running database seed scripts in Node
 - mongoose (^9.11.4) | MongoDB object modeling and cached connection management for serverless Next.js
 - next-auth (5.0.0-beta.32) | Auth.js v5 for Next.js 15 App Router authentication with JWT session strategy
 
 TODO(manthan): CONTENT NEEDED FROM OWNER
 ----------------------------------------
+- Seed projects: Run `npm run seed:projects` after populating MONGODB_URI in .env.local to import all 5 seed projects into Atlas as drafts.
 - Environment values: Populate real values in .env.local (MONGODB_URI, AUTH_SECRET, ADMIN_EMAIL, AUTH_GITHUB_ID, AUTH_GITHUB_SECRET, CLOUDINARY_*, RESEND_API_KEY, CONTACT_TO_EMAIL, NEXT_PUBLIC_SITE_URL)
 - Profile photo: Add official photo to /public/images/profile.jpg (currently marked in about/page.tsx and content/site.ts)
 - Resume PDF: Upload resume PDF to /public/resume.pdf and update content/site.ts (resumeUrl)
 - Social links: Update GitHub and LinkedIn profile URLs and contact email in content/site.ts
 - Project descriptions & links:
-  * LeadAI: Detail problem/solution, add live demo and repo URLs in content/projects.seed.ts
-  * Mini Jarvis: Detail problem/solution/architecture, add live/demo link and repo in content/projects.seed.ts
-  * Mavrox: Detail problem/solution/architecture, add live and repo links in content/projects.seed.ts
-  * Videographer Client Portfolio: Add dates, client URL, and metrics in content/projects.seed.ts and content/experience.ts
-  * GTA LFG App: Detail matchmaking problem/solution, add live and repo links in content/projects.seed.ts
+  * LeadAI: Detail problem/solution, add live demo and repo URLs in content/projects.seed.ts or edit directly in /admin/projects
+  * Mini Jarvis: Detail problem/solution/architecture, add live/demo link and repo in content/projects.seed.ts or edit directly in /admin/projects
+  * Mavrox: Detail problem/solution/architecture, add live and repo links in content/projects.seed.ts or edit directly in /admin/projects
+  * Videographer Client Portfolio: Add dates, client URL, and metrics in content/projects.seed.ts or edit directly in /admin/projects
+  * GTA LFG App: Detail matchmaking problem/solution, add live and repo links in content/projects.seed.ts or edit directly in /admin/projects
 - Experience & Education:
   * Add academic honors/GPA or specific achievements at PIET in content/experience.ts
   * Add links to merged open-source PRs and repositories in content/experience.ts
@@ -63,4 +69,4 @@ KNOWN ISSUES
 
 NEXT STEP
 ---------
-Wait for user approval, then start Phase 4 (Projects admin CRUD + public pages and image upload).
+Wait for user approval, then start Phase 5 (Blog editor, publish flow, public pages).

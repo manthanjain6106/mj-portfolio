@@ -69,4 +69,3 @@ export const Setting: Model<ISetting> =
   mongoose.models.Setting || mongoose.model<ISetting>("Setting", SettingSchema);
 
 export default Setting;
-

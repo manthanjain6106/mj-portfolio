@@ -1,10 +1,5 @@
 import { connectToDatabase } from "@/lib/mongodb";
-import { Project, type IProject } from "@/models/Project";
-import {
-  seedProjects,
-  type ProjectItem,
-  type ProjectCategory,
-} from "@/content/projects.seed";
+import { Project, type IProject, type ProjectCategory } from "@/models/Project";
 
 export async function getProjectsCount(): Promise<number> {
   try {
@@ -21,10 +16,11 @@ export async function getProjectsCount(): Promise<number> {
 export async function getRecentProjects(limit = 5): Promise<IProject[]> {
   try {
     await connectToDatabase();
-    return await Project.find()
+    const projects = await Project.find()
       .sort({ createdAt: -1 })
       .limit(limit)
       .lean<IProject[]>();
+    return projects;
   } catch (error) {
     if (process.env.NODE_ENV === "development") {
       console.warn("Could not fetch recent projects from database:", error);
@@ -33,27 +29,83 @@ export async function getRecentProjects(limit = 5): Promise<IProject[]> {
   }
 }
 
-// Public static seed queries (active until Phase 4 admin CRUD & DB integration)
-export async function getAllProjects(): Promise<readonly ProjectItem[]> {
-  return seedProjects;
+export async function getPublishedProjects(
+  category?: string
+): Promise<IProject[]> {
+  try {
+    await connectToDatabase();
+    const filter: Record<string, unknown> = { status: "published" };
+    if (category && category !== "all") {
+      filter.category = category;
+    }
+
+    return await Project.find(filter)
+      .sort({ order: 1, createdAt: -1 })
+      .lean<IProject[]>();
+  } catch (error) {
+    if (process.env.NODE_ENV === "development") {
+      console.warn("Could not fetch published projects from database:", error);
+    }
+    return [];
+  }
 }
 
-export async function getFeaturedProjects(): Promise<readonly ProjectItem[]> {
-  return seedProjects
-    .filter((project) => project.featured && project.status === "published")
-    .slice(0, 3);
+export async function getFeaturedProjects(): Promise<IProject[]> {
+  try {
+    await connectToDatabase();
+    return await Project.find({ status: "published", featured: true })
+      .sort({ order: 1, createdAt: -1 })
+      .limit(3)
+      .lean<IProject[]>();
+  } catch (error) {
+    if (process.env.NODE_ENV === "development") {
+      console.warn("Could not fetch featured projects from database:", error);
+    }
+    return [];
+  }
 }
 
-export async function getProjectsByCategory(
-  category: ProjectCategory
-): Promise<readonly ProjectItem[]> {
-  return seedProjects.filter(
-    (project) => project.category === category && project.status === "published"
-  );
-}
-
-export async function getProjectBySlug(
+export async function getPublishedProjectBySlug(
   slug: string
-): Promise<ProjectItem | undefined> {
-  return seedProjects.find((project) => project.slug === slug);
+): Promise<IProject | null> {
+  try {
+    await connectToDatabase();
+    return await Project.findOne({
+      slug,
+      status: "published",
+    }).lean<IProject>();
+  } catch (error) {
+    if (process.env.NODE_ENV === "development") {
+      console.warn(`Could not fetch published project (${slug}):`, error);
+    }
+    return null;
+  }
+}
+
+export async function getAllAdminProjects(): Promise<IProject[]> {
+  try {
+    await connectToDatabase();
+    return await Project.find()
+      .sort({ order: 1, createdAt: -1 })
+      .lean<IProject[]>();
+  } catch (error) {
+    if (process.env.NODE_ENV === "development") {
+      console.warn("Could not fetch admin projects from database:", error);
+    }
+    return [];
+  }
+}
+
+export async function getAdminProjectById(
+  id: string
+): Promise<IProject | null> {
+  try {
+    await connectToDatabase();
+    return await Project.findById(id).lean<IProject>();
+  } catch (error) {
+    if (process.env.NODE_ENV === "development") {
+      console.warn(`Could not fetch project by id (${id}):`, error);
+    }
+    return null;
+  }
 }

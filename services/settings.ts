@@ -12,4 +12,3 @@ export async function getDatabaseSettings(): Promise<ISetting | null> {
     return null;
   }
 }
-

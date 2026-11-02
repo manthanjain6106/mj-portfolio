@@ -8,6 +8,8 @@ import { SkillsStripSection } from "@/components/sections/skills-strip-section";
 import { LatestPostsSection } from "@/components/sections/latest-posts-section";
 import { ClosingCtaSection } from "@/components/sections/closing-cta-section";
 
+export const revalidate = 60;
+
 export const metadata: Metadata = {
   title: "Manthan | Full Stack & AI Developer",
   description:
